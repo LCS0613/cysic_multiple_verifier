@@ -11,3 +11,8 @@ wallets:
     wallet_address: 0x~
   ...
 ```
+## 2. Build multiple cysic-verifier
+- Each verifier will create in "cysic-verifier-{wallet name}" and start in screen "{walle_name}"
+```python
+bash setting.sh
+```
