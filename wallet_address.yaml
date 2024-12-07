@@ -1,0 +1,3 @@
+wallets:
+  - name: wallet1
+    wallet_address: "Modify here"
