@@ -10,3 +10,4 @@ wallets:
   - name: wallet2
     wallet_address: 0x~
   ...
+```
