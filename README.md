@@ -9,6 +9,7 @@ sudo apt get-upgrade
 
 ## 1. Activate Pythonvirtual environment
 ```bash
+cd ~/cysic_multiple_verifier
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
@@ -52,4 +53,10 @@ sudo ufw allow 80
 
 # Delete firewall setting(When you don't use 80 port)
 sudo ufw delete allow 80 
+```
+
+## 5. Restart verifier instances
+```bash
+cd ~/cysic_multiple_verifier
+bash settings.sh
 ```
