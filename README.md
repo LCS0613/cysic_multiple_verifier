@@ -1,9 +1,16 @@
 # cysic_multiple_verifier
-Shell scripts for build multiple cysic verifier(for Linux)
+Scripts for build multiple cysic verifier(for Linux)
 
-## 0. Activate virtual environment
+## 0. Update and upgrade packages
+```bash
+sudo apt update
+sudo apt get-upgrade
+```
+
+## 1. Activate Pythonvirtual environment
 ```bash
 source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ## 1. Generate metamask wallets and build yaml file for cysic-verifier
@@ -13,7 +20,7 @@ source .venv/bin/activate
 # Generate metamask wallets(ex) number=10)
 python metamask.py -num 10
 
-# Build yaml file for cysic-verifier
+# Build yaml file for cysic-verifier(wallet_address.yaml)
 python build_yaml.py
 ```
 
@@ -27,6 +34,7 @@ wallets:
     wallet_address: 0x~
   ...
 ```
+
 ## 3. Build multiple cysic-verifier instances
 - Each verifier will be created in a folder named cysic-verifier-{wallet_name} and will start in a screen session named {wallet_name}.
 ```bash
