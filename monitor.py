@@ -46,21 +46,40 @@ def get_wallet_status():
     return wallets_status, summary
 
 def is_screen_running(name):
+    """Check if the screen session is running and syncing blocks"""
+    if not screen_exists(name):
+        return False
+    
+    last_log = get_last_log(name)
+    return "sync to block:" in last_log
+
+def screen_exists(name):
+    """Check if the screen session exists"""
     result = subprocess.run(['screen', '-ls'], capture_output=True, text=True)
     return name in result.stdout
 
 def get_last_log(name):
+    """Get the last log line from the screen log file"""
     log_path = os.path.expanduser(f'~/cysic-verifier-{name}/screen.log')
     try:
-        result = subprocess.run(['tail', '-n', '1', log_path], 
+        # Get last 5 lines to find the most recent sync message
+        result = subprocess.run(['tail', '-n', '5', log_path], 
                               capture_output=True, text=True)
-        return result.stdout.strip() or "No logs available"
+        log_lines = result.stdout.strip().split('\n')
+        
+        # Search for the most recent "sync to block:" message
+        for line in reversed(log_lines):
+            if "sync to block:" in line:
+                return line
+        
+        return log_lines[-1] if log_lines else "No logs available"
     except:
         return "No logs available"
 
 def get_resource_usage(name):
-    if not is_screen_running(name):
-        return {'cpu': '0', 'memory': '0'}
+    """Get detailed CPU and RAM usage for the screen session"""
+    if not screen_exists(name):
+        return {'cpu': '0', 'memory': '0', 'memory_mb': '0'}
     
     try:
         # Get screen session PID
@@ -68,17 +87,22 @@ def get_resource_usage(name):
         pid = subprocess.check_output(ps_cmd, shell=True).decode().strip()
         
         if pid:
-            # Get CPU and memory usage
-            cmd = f"ps -p {pid} -o %cpu,%mem | tail -n 1"
+            # Get detailed CPU and memory information
+            cmd = f"ps -p {pid} -o %cpu,%mem,rss | tail -n 1"
             usage = subprocess.check_output(cmd, shell=True).decode().strip().split()
+            
+            # Convert RSS (Resident Set Size) from KB to MB
+            memory_mb = float(usage[2]) / 1024
+            
             return {
                 'cpu': usage[0],
-                'memory': usage[1]
+                'memory': usage[1],
+                'memory_mb': f'{memory_mb:.1f}'
             }
     except:
         pass
     
-    return {'cpu': '0', 'memory': '0'}
+    return {'cpu': '0', 'memory': '0', 'memory_mb': '0'}
 
 @app.route('/')
 def index():

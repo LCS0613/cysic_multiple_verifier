@@ -112,7 +112,8 @@
                 Status: {{ wallet.status }}
             </p>
             <p class="resources">
-                CPU: {{ wallet.resources.cpu }}% | Memory: {{ wallet.resources.memory }}%
+                CPU: {{ wallet.resources.cpu }}% | 
+                Memory: {{ wallet.resources.memory }}% ({{ wallet.resources.memory_mb }} MB)
             </p>
             <div class="last-log">
                 {{ wallet.last_log }}

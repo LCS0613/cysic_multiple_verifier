@@ -6,11 +6,11 @@ Shell scripts for build multiple cysic verifier(for Linux)
 source .venv/bin/activate
 ```
 
-## 1. Generate metamask wallets(ex) number=10) and build yaml file for cysic-verifier
+## 1. Generate metamask wallets and build yaml file for cysic-verifier
 - metamask_import.json : metamask import file(Use for import wallets to metamask in chrome)
 - wallet.csv : wallet information (Keeep this file private)
 ```python
-# Generate metamask wallets
+# Generate metamask wallets(ex) number=10)
 python metamask.py -num 10
 
 # Build yaml file for cysic-verifier
@@ -38,6 +38,10 @@ bash setting.sh
 # Default port is 80, if you want to use other port, use -port option
 python monitor.py -port 80
 
-# Firewall setting(Ubuntu/Debian
-sudo ufw allow 80    # 80포트 사용시
+# Firewall setting(Ubuntu/Debian)
+# ex) Using 80 port
+sudo ufw allow 80
+
+# Delete firewall setting(When you don't use 80 port)
+sudo ufw delete allow 80 
 ```
