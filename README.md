@@ -8,7 +8,7 @@ sudo apt update
 sudo apt get-upgrade
 
 # Download git repository
-git clone https://github.com/cysic-labs/cysic_multiple_verifier.git
+git clone https://github.com/LCS0613/cysic_multiple_verifier.git
 ```
 
 ## 1. Activate Pythonvirtual environment
