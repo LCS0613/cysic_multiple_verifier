@@ -1,0 +1,3 @@
+bot_token: "YOUR_BOT_TOKEN"
+chat_id: "YOUR_CHAT_ID"
+update_interval: 5  # 업데이트 간격 (분 단위) 

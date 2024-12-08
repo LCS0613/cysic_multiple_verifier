@@ -63,8 +63,8 @@ EOF
     chmod +x "$verifier_dir"/verifier
     chmod +x "$verifier_dir"/start.sh
     
-    # Create screen session
-    screen -dmS "$name" bash "$verifier_dir"/start.sh
+    # Create screen session with logging
+    screen -dmS "$name" -L -Logfile "$verifier_dir/screen.log" bash "$verifier_dir"/start.sh
     
     echo "Verifier for $name started in screen session"
 done
