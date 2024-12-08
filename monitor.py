@@ -142,5 +142,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     # 더 빠른 응답을 위한 Flask 설정 추가
-    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 5  # 캐시 시간을 5초로 설정
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 60  # 캐시 시간을 60초로 설정
     app.run(host='0.0.0.0', port=args.port, threaded=True)
