@@ -125,22 +125,29 @@ def get_resource_usage(name):
     except:
         return {'cpu': '0', 'memory': '0', 'memory_mb': '0'}
 
+def load_config():
+    with open('config.yaml', 'r') as file:
+        return yaml.safe_load(file)
+
 @app.route('/')
 def index():
+    config = load_config()
     wallets_status, summary = get_wallet_status()
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return render_template('monitor.html', 
                          wallets=wallets_status,
                          summary=summary,
-                         current_time=current_time)
+                         current_time=current_time,
+                         refresh_interval=config['monitor']['refresh_interval'])
 
 if __name__ == '__main__':
+    config = load_config()
     parser = argparse.ArgumentParser(description='Wallet Monitor Web Server')
-    parser.add_argument('-port', type=int, default=80,
-                       help='Port number for the web server (default: 80)')
+    parser.add_argument('-port', type=int, 
+                       default=config['monitor']['default_port'],
+                       help=f'Port number for the web server (default: {config["monitor"]["default_port"]})')
     
     args = parser.parse_args()
     
-    # 더 빠른 응답을 위한 Flask 설정 추가
-    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 60  # 캐시 시간을 60초로 설정
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = config['monitor']['cache_timeout']
     app.run(host='0.0.0.0', port=args.port, threaded=True)

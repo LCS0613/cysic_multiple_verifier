@@ -1,0 +1,4 @@
+monitor:
+  refresh_interval: 60  # 웹페이지 새로고침 간격(초)
+  cache_timeout: 60     # Flask 캐시 타임아웃(초)
+  default_port: 80      # 기본 포트 번호 
