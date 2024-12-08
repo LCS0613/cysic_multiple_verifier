@@ -27,13 +27,17 @@ wallets:
     wallet_address: 0x~
   ...
 ```
-## 2. Build multiple cysic-verifier instances
+## 3. Build multiple cysic-verifier instances
 - Each verifier will be created in a folder named cysic-verifier-{wallet_name} and will start in a screen session named {wallet_name}.
 ```bash
 bash setting.sh
 ```
 
 ## 4. Monitor verifier status
-```bash
-bash monitor.sh
+```python
+# Default port is 80, if you want to use other port, use -port option
+python monitor.py -port 80
+
+# Firewall setting(Ubuntu/Debian
+sudo ufw allow 80    # 80포트 사용시
 ```

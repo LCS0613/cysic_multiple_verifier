@@ -1,0 +1,5 @@
+wallets:
+- name: wallet1
+  wallet_address: '0x99bFF12cE558f3335cdB9A956aD0464e5e312425'
+- name: wallet2
+  wallet_address: '0x4ED1Df877a404D5D38A0e210ec53743Bbb3D2451'

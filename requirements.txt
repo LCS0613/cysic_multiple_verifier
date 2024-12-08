@@ -1,0 +1,13 @@
+# Web Framework
+Flask==3.0.0
+
+# YAML Processing
+PyYAML==6.0.1
+
+# Web3 and Crypto (for metamask.py)
+web3==6.11.3
+eth-account==0.9.0
+mnemonic==0.20
+
+# Development Tools
+python-dotenv==1.0.0
