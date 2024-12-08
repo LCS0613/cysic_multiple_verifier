@@ -45,24 +45,48 @@ def get_wallet_status():
     
     return wallets_status, summary
 
+def get_screen_pid(name):
+    """Get PID of most recent screen session"""
+    try:
+        # Get all matching screen sessions and sort by creation time
+        ps_cmd = f"screen -ls | grep {name} | sort -k2 -r | head -n1 | awk '{{print $1}}' | cut -d'.' -f1"
+        pid = subprocess.check_output(ps_cmd, shell=True).decode().strip()
+        return pid if pid else None
+    except:
+        return None
+
 def is_screen_running(name):
     """Check if the screen session is running and syncing blocks"""
-    if not screen_exists(name):
+    pid = get_screen_pid(name)
+    if not pid:
         return False
     
-    last_log = get_last_log(name)
-    return "sync to block:" in last_log
-
-def screen_exists(name):
-    """Check if the screen session exists"""
-    result = subprocess.run(['screen', '-ls'], capture_output=True, text=True)
-    return name in result.stdout
-
-def get_last_log(name):
-    """Get the last log line from the screen log file"""
+    # Try to get log from existing screen session
     log_path = os.path.expanduser(f'~/cysic-verifier-{name}/screen.log')
+    if not os.path.exists(log_path):
+        try:
+            # Get screen session's working directory
+            cmd = f"pwdx {pid}"
+            working_dir = subprocess.check_output(cmd, shell=True).decode().strip().split()[1]
+            log_path = os.path.join(working_dir, 'screen.log')
+        except:
+            return False
+    
     try:
-        # Get last 5 lines to find the most recent sync message
+        # Check if the process is actually running
+        subprocess.check_output(['ps', '-p', pid])
+        last_log = get_last_log(name, log_path)
+        return "sync to block:" in last_log
+    except subprocess.CalledProcessError:
+        return False
+
+def get_last_log(name, log_path=None):
+    """Get the last log line from the screen log file"""
+    if log_path is None:
+        log_path = os.path.expanduser(f'~/cysic-verifier-{name}/screen.log')
+    
+    try:
+        # Get last 5 lines and check for recent activity
         result = subprocess.run(['tail', '-n', '5', log_path], 
                               capture_output=True, text=True)
         log_lines = result.stdout.strip().split('\n')
@@ -78,31 +102,28 @@ def get_last_log(name):
 
 def get_resource_usage(name):
     """Get detailed CPU and RAM usage for the screen session"""
-    if not screen_exists(name):
+    pid = get_screen_pid(name)
+    if not pid:
         return {'cpu': '0', 'memory': '0', 'memory_mb': '0'}
     
     try:
-        # Get screen session PID
-        ps_cmd = f"screen -ls | grep {name} | awk '{{print $1}}' | cut -d'.' -f1"
-        pid = subprocess.check_output(ps_cmd, shell=True).decode().strip()
+        # Verify process is still running
+        subprocess.check_output(['ps', '-p', pid])
         
-        if pid:
-            # Get detailed CPU and memory information
-            cmd = f"ps -p {pid} -o %cpu,%mem,rss | tail -n 1"
-            usage = subprocess.check_output(cmd, shell=True).decode().strip().split()
-            
-            # Convert RSS (Resident Set Size) from KB to MB
-            memory_mb = float(usage[2]) / 1024
-            
-            return {
-                'cpu': usage[0],
-                'memory': usage[1],
-                'memory_mb': f'{memory_mb:.1f}'
-            }
+        # Get detailed CPU and memory information
+        cmd = f"ps -p {pid} -o %cpu,%mem,rss | tail -n 1"
+        usage = subprocess.check_output(cmd, shell=True).decode().strip().split()
+        
+        # Convert RSS (Resident Set Size) from KB to MB
+        memory_mb = float(usage[2]) / 1024
+        
+        return {
+            'cpu': usage[0],
+            'memory': usage[1],
+            'memory_mb': f'{memory_mb:.1f}'
+        }
     except:
-        pass
-    
-    return {'cpu': '0', 'memory': '0', 'memory_mb': '0'}
+        return {'cpu': '0', 'memory': '0', 'memory_mb': '0'}
 
 @app.route('/')
 def index():
@@ -119,4 +140,7 @@ if __name__ == '__main__':
                        help='Port number for the web server (default: 80)')
     
     args = parser.parse_args()
-    app.run(host='0.0.0.0', port=args.port)
+    
+    # 더 빠른 응답을 위한 Flask 설정 추가
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 5  # 캐시 시간을 5초로 설정
+    app.run(host='0.0.0.0', port=args.port, threaded=True)

@@ -20,6 +20,12 @@ fi
 echo "$wallets" | while read -r name wallet_address; do
     echo "Setting up verifier for $name with address $wallet_address"
     
+    # Check if screen session already exists
+    if screen -ls | grep -q "$name"; then
+        echo "Screen session '$name' already exists. Skipping setup..."
+        continue
+    fi
+    
     # Create unique directory for this verifier
     verifier_dir=~/cysic-verifier-"$name"
     rm -rf "$verifier_dir"
