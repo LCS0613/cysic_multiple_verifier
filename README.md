@@ -18,7 +18,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 1. Generate metamask wallets and build yaml file for cysic-verifier
+## 2. Generate metamask wallets and build yaml file for cysic-verifier
 - metamask_import.json : metamask import file(Use for import wallets to metamask in chrome)
 - wallet.csv : wallet information (Keeep this file private)
 ```python
@@ -29,7 +29,7 @@ python metamask.py -num 10
 python build_yaml.py
 ```
 
-## 2. Modify wallet_address.yaml(if needed)
+## 3. Modify wallet_address.yaml(if needed)
 - Modify EVM names and addresses in the wallet_address.yaml file.
 ```bash
 wallets:
@@ -40,13 +40,13 @@ wallets:
   ...
 ```
 
-## 3. Build multiple cysic-verifier instances
+## 4. Build multiple cysic-verifier instances
 - Each verifier will be created in a folder named cysic-verifier-{wallet_name} and will start in a screen session named {wallet_name}.
 ```bash
 bash setting.sh
 ```
 
-## 4. Monitor verifier status
+## 5. Monitor verifier status
 ```python
 # Default port is 80, if you want to use other port, use -port option
 python monitor.py -port 80
@@ -59,7 +59,7 @@ sudo ufw allow 80
 sudo ufw delete allow 80 
 ```
 
-## 5. Restart verifier instances
+## 6. Restart verifier instances
 ```bash
 cd ~/cysic_multiple_verifier
 bash settings.sh
