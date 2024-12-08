@@ -1,10 +1,14 @@
 # cysic_multiple_verifier
 Scripts for build multiple cysic verifier(for Linux)
 
-## 0. Update and upgrade packages
+## 0. Update and upgrade packages & download git repository
 ```bash
+# Update and upgrade packages
 sudo apt update
 sudo apt get-upgrade
+
+# Download git repository
+git clone https://github.com/cysic-labs/cysic_multiple_verifier.git
 ```
 
 ## 1. Activate Pythonvirtual environment
