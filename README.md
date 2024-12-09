@@ -22,8 +22,12 @@ pip install -r requirements.txt
 - metamask_import.json : metamask import file(Use for import wallets to metamask in chrome)
 - wallet.csv : wallet information (Keeep this file private)
 ```python
-# Generate metamask wallets(ex) number=10)
+# Generate metamask wallets
+# Option 1: Generate 10 wallets starting from wallet1
 python metamask.py -num 10
+
+# Option 2: Generate 5 wallets starting from wallet6
+python metamask.py -num 5 -start 6
 
 # Build yaml file for cysic-verifier(wallet_address.yaml)
 python build_yaml.py

@@ -6,18 +6,19 @@ from eth_account import Account
 from mnemonic import Mnemonic
 import argparse
 
-def generate_wallets(num_wallets):
+def generate_wallets(num_wallets, start_number=1):
     """
     Generate EVM wallets
     
     :param num_wallets: number of wallets to generate
+    :param start_number: starting wallet number (default: 1)
     :return: information about EVM wallets
     """
     Account.enable_unaudited_hdwallet_features()
     mnemo = Mnemonic("english")
     wallets = []
     
-    for i in range(1, num_wallets + 1):
+    for i in range(start_number, start_number + num_wallets):
         mnemonic_phrase = mnemo.generate(strength=128)
         seed = mnemo.to_seed(mnemonic_phrase)
         account = Account.from_key(seed[:32])
@@ -36,7 +37,10 @@ def save_wallets_to_csv(wallets, filename='wallets.csv'):
     """
     Save generated wallet information to a CSV file.
     """
-    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+    # Windows에서 파일 핸들링 이슈 방지
+    mode = 'w' if os.name != 'nt' else 'w+'
+    
+    with open(filename, mode, newline='', encoding='utf-8') as csvfile:
         fieldnames = ['Wallet Number', 'Address', 'Private Key', 'Mnemonic']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -78,11 +82,15 @@ def main():
                        type=int, 
                        required=True,
                        help='Number of wallets to generate')
+    parser.add_argument('-start', '--start_number',
+                       type=int,
+                       default=1,
+                       help='Starting wallet number (default: 1)')
     
     args = parser.parse_args()
     
-    # Generate wallets using command line argument
-    wallets = generate_wallets(args.number)
+    # Generate wallets using command line arguments
+    wallets = generate_wallets(args.number, args.start_number)
     
     # Save to CSV file (for backup)
     save_wallets_to_csv(wallets)
