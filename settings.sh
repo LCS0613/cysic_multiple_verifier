@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# 실행 권한 확인 및 부여
-chmod +x settings.sh
-
 # yq 설치 확인 및 설치
 if ! command -v yq &> /dev/null; then
     echo "Installing yq..."
@@ -10,63 +7,54 @@ if ! command -v yq &> /dev/null; then
     sudo chmod +x /usr/local/bin/yq
 fi
 
-# Check if wallet_address.yaml exists
+# wallet_address.yaml 파일 존재 확인
 if [ ! -f "wallet_address.yaml" ]; then
     echo "Error: wallet_address.yaml file not found"
     exit 1
 fi
 
-# Read wallet addresses from YAML file
+# YAML 파일에서 지갑 주소 읽기
 wallets=$(yq eval '.wallets[] | [.name, .wallet_address] | join(" ")' wallet_address.yaml)
 
-# Check if any wallets were found
+# 지갑 정보 확인
 if [ -z "$wallets" ]; then
     echo "No wallets found in wallet_address.yaml"
     exit 1
 fi
 
-# Process each wallet
+# 각 지갑 처리
 echo "$wallets" | while read -r name wallet_address; do
-    echo "Setting up verifier for $name with address $wallet_address"
-    
-    # Check if screen session already exists
+    # screen 세션 존재 여부 확인
     if screen -ls | grep -q "$name"; then
-        echo "Screen session '$name' already exists. Terminating existing session..."
-        screen -S "$name" -X quit
+        echo "Screen session '$name' is already running. Skipping..."
+        continue  # 다음 지갑으로 넘어감
     fi
     
-    # Create unique directory for this verifier
+    echo "Setting up verifier for $name with address $wallet_address"
+    
+    # verifier 디렉토리 생성
     verifier_dir="$HOME/cysic-verifier-$name"
     rm -rf "$verifier_dir"
     mkdir -p "$verifier_dir"
     
-    # Download necessary files
+    # 필요한 파일 다운로드
     wget -O "$verifier_dir/verifier" https://github.com/cysic-labs/phase2_libs/releases/download/v1.0.0/verifier_linux
     wget -O "$verifier_dir/libdarwin_verifier.so" https://github.com/cysic-labs/phase2_libs/releases/download/v1.0.0/libdarwin_verifier.so
     
-    # Create config.yaml
+    # config.yaml 생성
     cat > "$verifier_dir/config.yaml" << EOF
-# Not Change
 chain:
-  # Not Change
-  # endpoint: "node-pre.prover.xyz:80"
   endpoint: "grpc-testnet.prover.xyz:80"
-  # Not Change
   chain_id: "cysicmint_9001-1"
-  # Not Change
   gas_coin: "CYS"
-  # Not Change
   gas_price: 10
-  # Modify Here：! Your Address (EVM) submitted to claim rewards
 claim_reward_address: "$wallet_address"
 
 server:
-  # don't modify this
-  # cysic_endpoint: "https://api-pre.prover.xyz"
   cysic_endpoint: "https://api-testnet.prover.xyz"
 EOF
     
-    # Set up start script
+    # start.sh 스크립트 생성
     cat > "$verifier_dir/start.sh" << EOF
 #!/bin/bash
 cd "$verifier_dir"
@@ -74,15 +62,15 @@ chmod +x verifier
 LD_LIBRARY_PATH=. CHAIN_ID=534352 ./verifier
 EOF
     
-    # Make scripts executable
+    # 실행 권한 부여
     chmod +x "$verifier_dir/verifier"
     chmod +x "$verifier_dir/start.sh"
     
-    # Create screen session with logging
+    # screen 세션 생성
     screen -dmS "$name" -L -Logfile "$verifier_dir/screen.log" bash "$verifier_dir/start.sh"
     
     echo "Verifier for $name started in screen session"
-    sleep 2  # 각 지갑 설정 사이에 약간의 딜레이 추가
+    sleep 2
 done
 
-echo "All verifiers have been set up and started"
+echo "All verifiers have been processed"
