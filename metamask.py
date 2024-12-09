@@ -1,6 +1,5 @@
 import os
 import csv
-import json
 from web3 import Web3
 from eth_account import Account
 from mnemonic import Mnemonic
@@ -37,7 +36,6 @@ def save_wallets_to_csv(wallets, filename='wallets.csv'):
     """
     Save generated wallet information to a CSV file.
     """
-    # Windows에서 파일 핸들링 이슈 방지
     mode = 'w' if os.name != 'nt' else 'w+'
     
     with open(filename, mode, newline='', encoding='utf-8') as csvfile:
@@ -47,36 +45,18 @@ def save_wallets_to_csv(wallets, filename='wallets.csv'):
         
         for wallet in wallets:
             writer.writerow({
-                'Wallet Number': wallet['wallet_number'],
+                'Wallet Number': f"Wallet {wallet['wallet_number']}",
                 'Address': wallet['address'],
                 'Private Key': wallet['private_key'],
                 'Mnemonic': wallet['mnemonic']
             })
     
-    print(f"{len(wallets)} wallet(s) information has been saved to {filename}")
-
-def create_metamask_import(wallets, json_file='metamask_import.json'):
-    """
-    Create JSON file for MetaMask import with consistent wallet naming
-    """
-    metamask_accounts = []
-    
-    for wallet in wallets:
-        account = {
-            "name": f"wallet{wallet['wallet_number']}",
-            "mnemonic": wallet['mnemonic'],
-            "numberOfAccounts": 1,
-            "hdPath": "m/44'/60'/0'/0"
-        }
-        metamask_accounts.append(account)
-    
-    with open(json_file, 'w', encoding='utf-8') as f:
-        json.dump(metamask_accounts, f, indent=2)
-    
-    print(f"{len(metamask_accounts)} accounts have been saved to {json_file}")
+    print(f"\n{len(wallets)} wallet(s) information has been saved to {filename}")
+    print("You can import these wallets to MetaMask using either:")
+    print("1. Import Account > Private Key (one by one)")
+    print("2. Import Account > Seed Phrase (using mnemonic)")
 
 def main():
-    # 커맨드 라인 인자 파서 설정
     parser = argparse.ArgumentParser(description='Generate EVM wallets')
     parser.add_argument('-num', '--number', 
                        type=int, 
@@ -92,11 +72,8 @@ def main():
     # Generate wallets using command line arguments
     wallets = generate_wallets(args.number, args.start_number)
     
-    # Save to CSV file (for backup)
+    # Save to CSV file
     save_wallets_to_csv(wallets)
-    
-    # Create JSON file for MetaMask import
-    create_metamask_import(wallets)
     
     print("\nGenerated Wallet Information:")
     for wallet in wallets:

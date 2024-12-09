@@ -11,7 +11,7 @@ sudo apt get-upgrade
 git clone https://github.com/LCS0613/cysic_multiple_verifier.git
 ```
 
-## 1. Activate Pythonvirtual environment
+## 1. Activate Python virtual environment
 ```bash
 cd ~/cysic_multiple_verifier
 source .venv/bin/activate
@@ -19,8 +19,7 @@ pip install -r requirements.txt
 ```
 
 ## 2. Generate metamask wallets and build yaml file for cysic-verifier
-- metamask_import.json : metamask import file(Use for import wallets to metamask in chrome)
-- wallet.csv : wallet information (Keeep this file private)
+- wallet.csv : wallet information (Keep this file private)
 ```python
 # Generate metamask wallets
 # Option 1: Generate 10 wallets starting from wallet1
