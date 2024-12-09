@@ -46,7 +46,12 @@ wallets:
 ## 4. Build multiple cysic-verifier instances
 - Each verifier will be created in a folder named cysic-verifier-{wallet_name} and will start in a screen session named {wallet_name}.
 ```bash
-bash setting.sh
+# Convert line endings to Linux format and set execute permission
+sed -i 's/\r$//' settings.sh
+chmod +x settings.sh
+
+# Run the script
+./settings.sh
 ```
 
 ## 5. Monitor verifier status
@@ -65,5 +70,10 @@ sudo ufw delete allow 80
 ## 6. Restart verifier instances
 ```bash
 cd ~/cysic_multiple_verifier
-bash settings.sh
+# Convert line endings to Linux format and set execute permission (if needed)
+sed -i 's/\r$//' settings.sh
+chmod +x settings.sh
+
+# Run the script
+./settings.sh
 ```
