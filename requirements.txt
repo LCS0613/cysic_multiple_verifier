@@ -11,3 +11,6 @@ mnemonic==0.20
 
 # Development Tools
 python-dotenv==1.0.0
+
+# Additional requirements
+requests>=2.26.0
